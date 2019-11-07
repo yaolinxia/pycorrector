@@ -121,6 +121,6 @@ def main():
 
 if __name__ == "__main__":
     test_list = input2list()
-    out_path = config.output_dir
+    out_path = config.result_path
     infer(test_list, 2, out_path)
     # input2dict()

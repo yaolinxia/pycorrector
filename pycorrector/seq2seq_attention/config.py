@@ -20,6 +20,7 @@ train_path = os.path.join(output_dir, 'train.txt')
 # Validation data path.
 test_path = os.path.join(output_dir, 'test.txt')
 
+result_path = os.path.join(output_dir, "result.txt")
 # seq2seq_attn_train config
 save_vocab_path = os.path.join(output_dir, 'vocab.txt')
 attn_model_path = os.path.join(output_dir, 'attn_model.weight')

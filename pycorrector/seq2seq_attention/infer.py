@@ -65,7 +65,7 @@ def infer(test_list, p, out_path):
             print("infer: " + infer_target)
             print("traget:" + src2target[i])
             total_nums += len(i)
-            correct_nums += min(infer_target, src2target[i])
+            correct_nums += minDistance(infer_target, src2target[i])
             f.write("input: " + i + '\n')
             f.write("infer: " + infer_target + '\n')
             f.write("target:" + src2target[i] + '\n')

@@ -60,7 +60,7 @@ def train(train_path='', test_path='', save_vocab_path='', attn_model_path='',
 
         print('num of samples:', len(input_texts))
         print('max sequence length for inputs:', max_input_texts_len)
-
+        # chars:保存所有字符，存放到列表中
         chars = data_reader.read_vocab(input_texts + target_texts)
         id2char = {i: j for i, j in enumerate(chars)}
         char2id = {j: i for i, j in id2char.items()}

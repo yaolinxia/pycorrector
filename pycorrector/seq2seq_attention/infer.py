@@ -7,6 +7,7 @@ import sys
 
 sys.path.append('../..')
 import os
+import random
 
 from pycorrector.seq2seq_attention import config
 from pycorrector.seq2seq_attention.corpus_reader import load_word_dict
@@ -29,8 +30,46 @@ class Inference(object):
     def infer(self, sentence):
         return gen_target(sentence, self.model, self.char2id, self.id2char, self.maxlen, topk=3)
 
+def input2list(test_path=config.test_path):
+    test_list = []
+    with open(test_path, 'r', encoding='utf-8') as f:
+        sen_list= f.readlines()
+        for i in range(0, len(sen_list), 2):
+            # print(sen_list[i][4:-1])
+            test_list.append(sen_list[i][4:-1])
+        print(test_list)
+        return test_list
 
-if __name__ == "__main__":
+def input2dict(test_path=config.test_path):
+    test_dict = {}
+    with open(test_path, 'r', encoding='utf-8') as f:
+        sen_list= f.readlines()
+        for i in range(0, len(sen_list), 2):
+            test_dict[sen_list[i][4:-1]] = sen_list[i+1][4:-1]
+        print(test_dict)
+        return test_dict
+
+def infer(test_list, p):
+    test_len = len(test_list)
+    test_rand = random.sample(test_list, test_len//p)
+    inference = Inference(save_vocab_path=config.save_vocab_path,
+                          attn_model_path=config.attn_model_path,
+                          maxlen=400)
+    total_nums = len(test_rand)
+    correct_nums = 0
+    src2target = input2dict()
+    for i in test_rand:
+        infer_target = inference.infer(i)
+        print("input: " + i)
+        print("infer: " + infer_target)
+        print("traget:" + src2target[i])
+        if infer_target == src2target[i]:
+            correct_nums += 1
+    pred = correct_nums / total_nums
+    print("prediction:", pred)
+
+
+def main():
     inputs = [
         '由我起开始做。',
         '没有解决这个问题，',
@@ -58,3 +97,8 @@ if __name__ == "__main__":
 # input:没有解决这个问题，
 # output:没有解决的问题，
 # input:由我起开始做。
+
+if __name__ == "__main__":
+    test_list = input2list()
+    infer(test_list, 2)
+    # input2dict()

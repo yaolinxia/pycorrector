@@ -49,24 +49,45 @@ def input2dict(test_path=config.test_path):
         print(test_dict)
         return test_dict
 
-def infer(test_list, p):
+def infer(test_list, p, out_path):
     test_len = len(test_list)
     test_rand = random.sample(test_list, test_len//p)
     inference = Inference(save_vocab_path=config.save_vocab_path,
                           attn_model_path=config.attn_model_path,
                           maxlen=400)
-    total_nums = len(test_rand)
+    total_nums = 0
     correct_nums = 0
     src2target = input2dict()
-    for i in test_rand:
-        infer_target = inference.infer(i)
-        print("input: " + i)
-        print("infer: " + infer_target)
-        print("traget:" + src2target[i])
-        if infer_target == src2target[i]:
-            correct_nums += 1
+    with open(out_path, 'a', encoding='utf-8') as f:
+        for i in test_rand:
+            infer_target = inference.infer(i)
+            print("input: " + i)
+            print("infer: " + infer_target)
+            print("traget:" + src2target[i])
+            total_nums += len(i)
+            correct_nums += min(infer_target, src2target[i])
+            f.write("input: " + i + '\n')
+            f.write("infer: " + infer_target + '\n')
+            f.write("target:" + src2target[i] + '\n')
+            # if infer_target == src2target[i]:
+            #     correct_nums += 1
+
     pred = correct_nums / total_nums
+    print("total_nums:", total_nums)
+    print("correct_nums:", correct_nums)
     print("prediction:", pred)
+
+def minDistance(word1, word2):
+    m = len(word1)
+    n = len(word2)
+    D = [[0] * (n+1) for _ in range(m+1)]
+    D[0] = [i for i in range(n+1)]
+    for i in range(1, m+1):
+        for j in range(1, n+1):
+            tmp1 = min(D[i-1][j], D[i][j-1]) + 1
+            tmp2 = D[i-1][j-1] + (0 if word1[i-1] == word2[j-1] else 1)
+            D[i][j] = min(tmp1, tmp2)
+    return D[m][n]
 
 
 def main():
@@ -100,5 +121,6 @@ def main():
 
 if __name__ == "__main__":
     test_list = input2list()
-    infer(test_list, 2)
+    out_path = config.output_dir
+    infer(test_list, 2, out_path)
     # input2dict()

@@ -24,7 +24,7 @@ def load_word_dict(save_path):
                 logger.error('error', line)
     return dict_data
 
-
+# 英文数据读取
 class FCEReader(Reader):
     """
     Read FCE data set
@@ -66,7 +66,7 @@ class FCEReader(Reader):
                         yield line.lower()[5:].strip().split()
                 i += 1
 
-
+# 中文语法数据读取
 class CGEDReader(Reader):
     """
     Read CGED data set

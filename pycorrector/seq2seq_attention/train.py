@@ -65,7 +65,7 @@ def train(train_path='', test_path='', save_vocab_path='', attn_model_path='',
         id2char = {i: j for i, j in enumerate(chars)}
         char2id = {j: i for i, j in id2char.items()}
         save_word_dict(char2id, save_vocab_path)
-
+    print("chars:", chars)
     model = Seq2seqAttnModel(chars,
                              attn_model_path=attn_model_path,
                              hidden_dim=hidden_dim,

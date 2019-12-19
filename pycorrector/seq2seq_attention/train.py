@@ -44,14 +44,14 @@ def get_validation_data(input_texts, target_texts, char2id, maxlen=400):
 def train(train_path='', test_path='', save_vocab_path='', attn_model_path='',
           batch_size=64, epochs=100, maxlen=400, hidden_dim=128, dropout=0.2, use_gpu=False):
     data_reader = CGEDReader(train_path)
-    input_texts, target_texts = data_reader.build_dataset(train_path)
+    input_texts, target_texts = data_reader.build_dataset(train_path) # 原始文本，修改后文本
     test_input_texts, test_target_texts = data_reader.build_dataset(test_path)
 
     # load or save word dict
     if os.path.exists(save_vocab_path):
         char2id = load_word_dict(save_vocab_path)
-        id2char = {int(j): i for i, j in char2id.items()}
-        chars = set([i for i in char2id.keys()])
+        id2char = {int(j): i for i, j in char2id.items()} # {0: '"', 1: '%', 2: '(', 3: ')', 4: '+'}
+        chars = set([i for i in char2id.keys()]) # {'+', '%', ')', '(', '"'}
     else:
         print('Training data...')
         print('input_texts:', input_texts[0])

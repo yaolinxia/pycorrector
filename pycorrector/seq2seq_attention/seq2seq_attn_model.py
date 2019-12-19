@@ -77,16 +77,21 @@ class Seq2seqAttnModel(object):
         # 搭建seq2seq模型
         x_in = Input(shape=(None,))
         y_in = Input(shape=(None,))
+        print("x:",x_in)
+        print("===============================")
+        print("y:", y_in)
         x = x_in
         y = y_in
         x_mask = Lambda(lambda x: K.cast(K.greater(K.expand_dims(x, 2), 0), 'float32'))(x)
         y_mask = Lambda(lambda x: K.cast(K.greater(K.expand_dims(x, 2), 0), 'float32'))(y)
+        print("x_mask:", x_mask)
+        print("y_mask:", y_mask)
 
         x_one_hot = Lambda(self._one_hot)([x, x_mask])
         x_prior = ScaleShift()(x_one_hot)  # 学习输出的先验分布（target的字词很可能在input出现过）
 
         # embedding
-        embedding = Embedding(len(self.chars), self.hidden_dim)
+        embedding = Embedding(len(self.chars), self.hidden_dim) # 其中一个是指input_dim, 另一个参数是指output_dim
         x = embedding(x)
         y = embedding(y)
 

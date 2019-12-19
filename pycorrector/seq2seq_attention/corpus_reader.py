@@ -5,7 +5,7 @@ from codecs import open
 
 from pycorrector.seq2seq_attention.reader import Reader, PAD_TOKEN, EOS_TOKEN, GO_TOKEN
 from pycorrector.utils.logger import logger
-
+from pycorrector.seq2seq_attention import config
 
 def save_word_dict(dict_data, save_path):
     with open(save_path, 'w', encoding='utf-8') as f:
@@ -22,6 +22,7 @@ def load_word_dict(save_path):
                 dict_data[items[0]] = int(items[1])
             except IndexError:
                 logger.error('error', line)
+    print("dict_data:", dict_data)
     return dict_data
 
 # 英文数据读取
@@ -127,3 +128,6 @@ def padding(x, char2id):
 def id2str(ids, id2char):
     # id转文字，找不到的用空字符代替
     return ''.join([id2char.get(i, '') for i in ids])
+
+if __name__ == '__main__':
+    load_word_dict(save_path=config.save_vocab_path)

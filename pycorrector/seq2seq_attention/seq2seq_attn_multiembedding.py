@@ -79,6 +79,7 @@ class Seq2seqAttn_multiembedding(object):
         x_in = Input(shape=(None,))
         y_in = Input(shape=(None,))
         x_p_in = Input(shape=(None,))
+        y_p_in = Input(shape=(None,))
 
         print("x:",x_in)
         print("===============================")
@@ -101,8 +102,8 @@ class Seq2seqAttn_multiembedding(object):
         # todo: self.pinyins表示；pinyin_vocab, vocabembedding_p()
         # pinyin_embedding
         embedding_p = Embedding(len(self.pinyins), self.hidden_dim // 2)
-        x_p = embedding_p(x)
-        y_p = embedding_p(y)
+        x_p = embedding_p(x_p_in)
+        y_p = embedding_p(y_p_in)
 
         x = Concatenate(x, x_p)
         y = Concatenate(y, y_p)

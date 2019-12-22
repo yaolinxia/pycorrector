@@ -109,18 +109,6 @@ def train(train_path='', test_path='', save_vocab_path='', save_pinyin_path='', 
                         callbacks=[evaluator])
 
 if __name__ == "__main__":
-    """
-    train(train_path=config.train_path,
-          test_path=config.test_path,
-          save_vocab_path=config.save_vocab_path,
-          attn_model_path=config.attn_model_path,
-          batch_size=config.batch_size,
-          epochs=config.epochs,
-          maxlen=config.maxlen,
-          hidden_dim=config.rnn_hidden_dim,
-          dropout=config.dropout,
-          use_gpu=config.use_gpu)
-    """
     train(train_path=config.train_sighan_path,
           test_path=config.test_sighan_path,
           save_vocab_path=config.save_taiwan_vocab_path,

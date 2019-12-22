@@ -105,8 +105,8 @@ class Seq2seqAttn_multiembedding(object):
         x_p = embedding_p(x_p_in)
         y_p = embedding_p(y_p_in)
 
-        x = Concatenate(x, x_p)
-        y = Concatenate(y, y_p)
+        x = Concatenate([x, x_p],axis=-1)
+        y = Concatenate([y, y_p],axis=-1)
 
         # encoder，双层双向GRU; decoder，双层单向GRU
         if self.use_gpu:

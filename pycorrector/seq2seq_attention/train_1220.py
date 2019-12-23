@@ -139,7 +139,7 @@ if __name__ == "__main__":
     #       use_gpu=config.use_gpu)
 
     # 本地调试，文件换成较小文件
-    train(train_path=config.test_sighan_path,
+    train(train_path=config.train_sighan_path,
           test_path=config.test_sighan_path,
           save_vocab_path=config.save_taiwan_vocab_path,
           save_pinyin_path=config.save_pinyin_path,

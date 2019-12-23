@@ -7,7 +7,7 @@ import sys
 
 sys.path.append('../..')
 import os
-
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import numpy as np
 
 from pycorrector.seq2seq_attention import config
@@ -16,29 +16,46 @@ from pycorrector.seq2seq_attention.evaluate import Evaluate
 from pycorrector.seq2seq_attention.seq2seq_attn_multiembedding import Seq2seqAttn_multiembedding
 from pypinyin import pinyin, lazy_pinyin, Style
 
-def data_generator(input_texts, target_texts, char2id, batch_size, maxlen=400):
+def data_generator(input_texts, target_texts, char2id, input_pinyins, output_pinyins, pingyin2id, batch_size, maxlen=400):
     # 数据生成器
     while True:
         X, Y = [], []
+        X_p, Y_p = [], []
         for i in range(len(input_texts)):
             X.append(str2id(input_texts[i], char2id, maxlen))
             Y.append(str2id(target_texts[i], char2id, maxlen))
+            X_p.append(str2id(input_pinyins[i], pingyin2id, maxlen))
+            Y_p.append(str2id(output_pinyins[i], pingyin2id, maxlen))
             if len(X) == batch_size:
                 X = np.array(padding(X, char2id))
                 Y = np.array(padding(Y, char2id))
-                yield [X, Y], None
-                X, Y = [], []
+                X_p = np.array(padding(X_p, pingyin2id))
+                Y_p = np.array(padding(Y_p, pingyin2id))
+                yield [X, Y, X_p, Y_p], None
+                X, Y, X_p, Y_p = [], [], [], []
+        # for i in range(len(input_pinyins)):
+        #     X_p.append(str2id(input_pinyins[i], pingyin2id, maxlen))
+        #     Y_p.append(str2id(output_pinyins[i], pingyin2id, maxlen))
+        #     if len(X) == batch_size:
+        #         X_p = np.array(padding(X_p, pingyin2id))
+        #         Y_p = np.array(padding(Y_p, pingyin2id))
+        #         yield [X_p, Y_p], None
+        #         X_p, Y_p = [], []
 
-
-def get_validation_data(input_texts, target_texts, char2id, maxlen=400):
+def get_validation_data(input_texts, target_texts, char2id, input_pinyins, output_pinyins, pingyin2id, maxlen=400):
     # 数据生成器
     X, Y = [], []
+    X_p, Y_p = [], []
     for i in range(len(input_texts)):
         X.append(str2id(input_texts[i], char2id, maxlen))
         Y.append(str2id(target_texts[i], char2id, maxlen))
+        X_p.append(str2id(input_pinyins[i], pingyin2id, maxlen))
+        Y_p.append(str2id(output_pinyins[i], pingyin2id, maxlen))
         X = np.array(padding(X, char2id))
         Y = np.array(padding(Y, char2id))
-        return [X, Y], None
+        X_p = np.array(padding(X_p, pingyin2id))
+        Y_p = np.array(padding(Y_p, pingyin2id))
+        return [X, Y, X_p, Y_p], None
 
 def to_pinyin(str_list):
     pinyin_list = []
@@ -102,21 +119,35 @@ def train(train_path='', test_path='', save_vocab_path='', save_pinyin_path='', 
                              use_gpu=use_gpu,
                              dropout=dropout).build_model()
     evaluator = Evaluate(model, attn_model_path, char2id, id2char, maxlen)
-    model.fit_generator(data_generator(input_texts, target_texts, char2id, batch_size, maxlen),
+    model.fit_generator(data_generator(input_texts, target_texts, char2id, input_pinyins, output_pinyins, pingyin2id,batch_size, maxlen),
                         steps_per_epoch=(len(input_texts) + batch_size - 1) // batch_size,
                         epochs=epochs,
-                        validation_data=get_validation_data(test_input_texts, test_target_texts, char2id, maxlen),
+                        validation_data=get_validation_data(test_input_texts, test_target_texts, char2id,test_input_pinyins, test_output_pinyins, pingyin2id, maxlen),
                         callbacks=[evaluator])
 
 if __name__ == "__main__":
-    train(train_path=config.train_sighan_path,
+    # train(train_path=config.train_sighan_path,
+    #       test_path=config.test_sighan_path,
+    #       save_vocab_path=config.save_taiwan_vocab_path,
+    #       save_pinyin_path=config.save_pinyin_path,
+    #       attn_model_path=config.attn_model_path,
+    #       batch_size=config.batch_size,
+    #       epochs=config.epochs,
+    #       maxlen=config.maxlen,
+    #       hidden_dim=config.rnn_hidden_dim,
+    #       dropout=config.dropout,
+    #       use_gpu=config.use_gpu)
+
+    # 本地调试，文件换成较小文件
+    train(train_path=config.test_sighan_path,
           test_path=config.test_sighan_path,
           save_vocab_path=config.save_taiwan_vocab_path,
           save_pinyin_path=config.save_pinyin_path,
-          attn_model_path=config.attn_model_path,
+          attn_model_path=config.attn_pinyin_path,
           batch_size=config.batch_size,
           epochs=config.epochs,
           maxlen=config.maxlen,
           hidden_dim=config.rnn_hidden_dim,
           dropout=config.dropout,
           use_gpu=config.use_gpu)
+

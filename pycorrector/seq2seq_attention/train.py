@@ -7,7 +7,7 @@ import sys
 
 sys.path.append('../..')
 import os
-
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import numpy as np
 
 from pycorrector.seq2seq_attention import config
@@ -93,7 +93,7 @@ if __name__ == "__main__":
           use_gpu=config.use_gpu)
 
     """
-    train(train_path=config.train_sighan_path,
+    train(train_path=config.test_sighan_path,
           test_path=config.test_sighan_path,
           save_vocab_path=config.save_vocab_path,
           attn_model_path=config.attn_model_path,

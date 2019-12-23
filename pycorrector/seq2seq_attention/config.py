@@ -30,10 +30,10 @@ output_sighan_dir = os.path.join(pwd_path, 'output_sighan')
 # sighan_train path
 train_sighan_path = os.path.join(output_sighan_dir, 'sighan_output_train.txt')
 # 汉字vocab
-save_taiwan_vocab_path = os.path.join(output_dir, 'char_vocab.txt')
+save_taiwan_vocab_path = os.path.join(output_sighan_dir, 'char_vocab.txt')
 # 拼音vocab
 save_pinyin_path = os.path.join(output_sighan_dir, 'pinyin_vocab.txt')
-
+attn_pinyin_path = os.path.join(output_sighan_dir, 'attn_pinyin_model.weight')
 # sighan_test path
 test_sighan_path = os.path.join(output_sighan_dir, "sighan_output_test.txt")
 result_path = os.path.join(output_sighan_dir, "result_sighan.txt")

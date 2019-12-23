@@ -6,9 +6,10 @@
 import os
 
 from keras import backend as K
-from keras.layers import Input, Lambda, Layer, Embedding, Bidirectional, Dense, Activation, GRU, CuDNNGRU
+from keras.layers import Input, Lambda, Layer, Embedding, Bidirectional, Dense, Activation, GRU, CuDNNGRU, Concatenate
 from keras.models import Model
 from keras.optimizers import Adam
+import tensorflow as tf
 
 
 class ScaleShift(Layer):
@@ -95,18 +96,29 @@ class Seq2seqAttn_multiembedding(object):
         x_prior = ScaleShift()(x_one_hot)  # 学习输出的先验分布（target的字词很可能在input出现过）
 
         # char_embedding
-        embedding = Embedding(len(self.chars), self.hidden_dim // 2) # 其中一个是指input_dim, 另一个参数是指output_dim:词向量的纬度
+        embedding = Embedding(len(self.chars), self.hidden_dim // 2 , mask_zero=True) # 其中一个是指input_dim, 另一个参数是指output_dim:词向量的纬度
+        # print("embedding.shape", embedding.shape)
         x = embedding(x)
         y = embedding(y)
+        print("x.shape", x.shape)
 
         # todo: self.pinyins表示；pinyin_vocab, vocabembedding_p()
         # pinyin_embedding
-        embedding_p = Embedding(len(self.pinyins), self.hidden_dim // 2)
+        embedding_p = Embedding(len(self.pinyins), self.hidden_dim // 2, mask_zero=True)
         x_p = embedding_p(x_p_in)
         y_p = embedding_p(y_p_in)
 
-        x = K.concatenate([x, x_p],axis=-1)
-        y = K.concatenate([y, y_p],axis=-1)
+        # cat = Concatenate(axis=1)([embedding, embedding_p])
+
+        # print("x_p.shape", x_p.shape)
+        # x = K.concatenate([x, x_p],axis=-1)
+        x = Concatenate(axis=-1)([x, x_p])
+        #x = tf.concat([x, x_p], axis=-1)
+        print("x_shape_concat", x.shape)
+
+        # y = K.concatenate([y, y_p],axis=-1)
+        y = Concatenate(axis=-1)([y, y_p])
+        #$ y = tf.concat([y, y_p], axis=-1)
 
         # encoder，双层双向GRU; decoder，双层单向GRU
         if self.use_gpu:
@@ -124,6 +136,9 @@ class Seq2seqAttn_multiembedding(object):
             y = GRU(self.hidden_dim, return_sequences=True, dropout=self.dropout)(y)
             y = GRU(self.hidden_dim, return_sequences=True, dropout=self.dropout)(y)
 
+        x = Lambda(lambda x: x, output_shape=lambda s: s)(x)
+        y = Lambda(lambda x: x, output_shape=lambda s: s)(y)
+
         xy = Interact()([y, x, x_mask])
         xy = Dense(512, activation='relu')(xy)
         xy = Dense(len(self.chars))(xy)
@@ -134,7 +149,7 @@ class Seq2seqAttn_multiembedding(object):
         cross_entropy = K.sparse_categorical_crossentropy(y_in[:, 1:], xy[:, :-1])
         loss = K.sum(cross_entropy * y_mask[:, 1:, 0]) / K.sum(y_mask[:, 1:, 0])
 
-        model = Model([x_in, y_in], xy)
+        model = Model([x_in, y_in, x_p_in, y_p_in], xy)
         model.add_loss(loss)
         model.compile(optimizer=Adam(1e-3))
         if os.path.exists(self.model_path):

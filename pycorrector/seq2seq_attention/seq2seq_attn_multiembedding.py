@@ -6,7 +6,7 @@
 import os
 
 from keras import backend as K
-from keras.layers import Input, Lambda, Layer, Embedding, Bidirectional, Dense, Activation, GRU, CuDNNGRU, Concatenate
+from keras.layers import Input, Lambda, Layer, Embedding, Bidirectional, Dense, Activation, GRU, CuDNNGRU
 from keras.models import Model
 from keras.optimizers import Adam
 
@@ -105,8 +105,8 @@ class Seq2seqAttn_multiembedding(object):
         x_p = embedding_p(x_p_in)
         y_p = embedding_p(y_p_in)
 
-        x = Concatenate([x, x_p],axis=-1)
-        y = Concatenate([y, y_p],axis=-1)
+        x = K.concatenate([x, x_p],axis=-1)
+        y = K.concatenate([y, y_p],axis=-1)
 
         # encoder，双层双向GRU; decoder，双层单向GRU
         if self.use_gpu:

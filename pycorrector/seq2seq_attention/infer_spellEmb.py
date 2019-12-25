@@ -12,7 +12,7 @@ import random
 from pycorrector.seq2seq_attention import config
 from pycorrector.seq2seq_attention.corpus_reader import load_word_dict
 from pycorrector.seq2seq_attention.evaluate import gen_target
-from pycorrector.seq2seq_attention.seq2seq_attn_model import Seq2seqAttnModel
+from pycorrector.seq2seq_attention.seq2seq_attn_multiembedding import Seq2seqAttn_multiembedding
 
 
 class Inference(object):
@@ -23,7 +23,7 @@ class Inference(object):
             self.chars = set([i for i in self.char2id.keys()])
         else:
             print('not exist vocab path')
-        seq2seq_attn_model = Seq2seqAttnModel(self.chars, attn_model_path=attn_model_path)
+        seq2seq_attn_model = Seq2seqAttn_multiembedding(self.chars, attn_model_path=attn_model_path)
         self.model = seq2seq_attn_model.build_model()
         self.maxlen = maxlen
 

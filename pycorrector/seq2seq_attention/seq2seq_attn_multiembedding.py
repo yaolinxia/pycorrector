@@ -81,10 +81,6 @@ class Seq2seqAttn_multiembedding(object):
         y_in = Input(shape=(None,))
         x_p_in = Input(shape=(None,))
         y_p_in = Input(shape=(None,))
-
-        print("x:",x_in)
-        print("===============================")
-        print("y:", y_in)
         x = x_in
         y = y_in
         x_mask = Lambda(lambda x: K.cast(K.greater(K.expand_dims(x, 2), 0), 'float32'))(x)
@@ -101,7 +97,6 @@ class Seq2seqAttn_multiembedding(object):
         x = embedding(x)
         y = embedding(y)
         print("x.shape", x.shape)
-
         # todo: self.pinyins表示；pinyin_vocab, vocabembedding_p()
         # pinyin_embedding
         embedding_p = Embedding(len(self.pinyins), self.hidden_dim // 2, mask_zero=True)

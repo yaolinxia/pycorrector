@@ -33,14 +33,6 @@ def data_generator(input_texts, target_texts, char2id, input_pinyins, output_pin
                 Y_p = np.array(padding(Y_p, pingyin2id))
                 yield [X, Y, X_p, Y_p], None
                 X, Y, X_p, Y_p = [], [], [], []
-        # for i in range(len(input_pinyins)):
-        #     X_p.append(str2id(input_pinyins[i], pingyin2id, maxlen))
-        #     Y_p.append(str2id(output_pinyins[i], pingyin2id, maxlen))
-        #     if len(X) == batch_size:
-        #         X_p = np.array(padding(X_p, pingyin2id))
-        #         Y_p = np.array(padding(Y_p, pingyin2id))
-        #         yield [X_p, Y_p], None
-        #         X_p, Y_p = [], []
 
 def get_validation_data(input_texts, target_texts, char2id, input_pinyins, output_pinyins, pingyin2id, maxlen=400):
     # 数据生成器
@@ -118,26 +110,21 @@ def train(train_path='', test_path='', save_vocab_path='', save_pinyin_path='', 
                              hidden_dim=hidden_dim,
                              use_gpu=use_gpu,
                              dropout=dropout).build_model()
-    evaluator = Evaluate(model, attn_model_path, char2id, id2char, maxlen)
-    model.fit_generator(data_generator(input_texts, target_texts, char2id, input_pinyins, output_pinyins, pingyin2id,batch_size, maxlen),
-                        steps_per_epoch=(len(input_texts) + batch_size - 1) // batch_size,
-                        epochs=epochs,
-                        validation_data=get_validation_data(test_input_texts, test_target_texts, char2id,test_input_pinyins, test_output_pinyins, pingyin2id, maxlen),
-                        callbacks=[evaluator])
+    # evaluator = Evaluate(model, attn_model_path, char2id, id2char, maxlen)
+    # model.fit_generator(data_generator(input_texts, target_texts, char2id, input_pinyins, output_pinyins, pingyin2id,batch_size, maxlen),
+    #                     steps_per_epoch=(len(input_texts) + batch_size - 1) // batch_size,
+    #                     epochs=epochs,
+    #                     validation_data=get_validation_data(test_input_texts, test_target_texts, char2id,test_input_pinyins, test_output_pinyins, pingyin2id, maxlen),
+    #                     callbacks=[evaluator])
+    model.fit_generator(
+        data_generator(input_texts, target_texts, char2id, input_pinyins, output_pinyins, pingyin2id, batch_size,
+                       maxlen),
+        steps_per_epoch=(len(input_texts) + batch_size - 1) // batch_size,
+        epochs=epochs,
+        validation_data=get_validation_data(test_input_texts, test_target_texts, char2id, test_input_pinyins,
+                                            test_output_pinyins, pingyin2id, maxlen))
 
 if __name__ == "__main__":
-    # train(train_path=config.train_sighan_path,
-    #       test_path=config.test_sighan_path,
-    #       save_vocab_path=config.save_taiwan_vocab_path,
-    #       save_pinyin_path=config.save_pinyin_path,
-    #       attn_model_path=config.attn_model_path,
-    #       batch_size=config.batch_size,
-    #       epochs=config.epochs,
-    #       maxlen=config.maxlen,
-    #       hidden_dim=config.rnn_hidden_dim,
-    #       dropout=config.dropout,
-    #       use_gpu=config.use_gpu)
-
     # 本地调试，文件换成较小文件
     train(train_path=config.train_sighan_path,
           test_path=config.test_sighan_path,

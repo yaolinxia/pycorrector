@@ -121,6 +121,7 @@ class Seq2seqAttn_multiembedding(object):
             x = Bidirectional(CuDNNGRU(int(self.hidden_dim / 2), return_sequences=True))(x)
             x = Bidirectional(CuDNNGRU(int(self.hidden_dim / 2), return_sequences=True))(x)
             # decoder
+            # todo: decoder层的y根据领域知识，字形相似性词典，字音相似性词典
             y = CuDNNGRU(self.hidden_dim, return_sequences=True)(y)
             y = CuDNNGRU(self.hidden_dim, return_sequences=True)(y)
         else:

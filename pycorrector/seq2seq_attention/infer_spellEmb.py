@@ -30,7 +30,7 @@ class Inference(object):
     def infer(self, sentence):
         return gen_target(sentence, self.model, self.char2id, self.id2char, self.maxlen, topk=3)
 
-def input2list(test_path=config.test_path):
+def input2list(test_path=config.test_sighan_path):
     test_list = []
     with open(test_path, 'r', encoding='utf-8') as f:
         sen_list= f.readlines()
@@ -40,7 +40,7 @@ def input2list(test_path=config.test_path):
         print(test_list)
         return test_list
 
-def input2dict(test_path=config.test_path):
+def input2dict(test_path=config.test_sighan_path):
     test_dict = {}
     with open(test_path, 'r', encoding='utf-8') as f:
         sen_list= f.readlines()
@@ -52,8 +52,8 @@ def input2dict(test_path=config.test_path):
 def infer(test_list, p, out_path):
     test_len = len(test_list)
     test_rand = random.sample(test_list, test_len//p)
-    inference = Inference(save_vocab_path=config.save_vocab_path,
-                          attn_model_path=config.attn_model_path,
+    inference = Inference(save_vocab_path=config.save_pinyin_path,
+                          attn_model_path=config.attn_pinyin_path,
                           maxlen=400)
     total_nums = 0
     correct_nums = 0
@@ -102,8 +102,8 @@ def main():
         '歌曲使人的感到快乐，',
         '会能够大幅减少互相抱怨的情况。'
     ]
-    inference = Inference(save_vocab_path=config.save_vocab_path,
-                          attn_model_path=config.attn_model_path,
+    inference = Inference(save_vocab_path=config.save_pinyin_path,
+                          attn_model_path=config.attn_pinyin_path,
                           maxlen=400)
     for i in inputs:
         target = inference.infer(i)
@@ -122,6 +122,6 @@ def main():
 
 if __name__ == "__main__":
     test_list = input2list()
-    out_path = config.result_path
+    out_path = config.result_pinyin_path
     infer(test_list, 2, out_path)
     # input2dict()

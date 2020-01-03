@@ -36,7 +36,7 @@ save_pinyin_path = os.path.join(output_sighan_dir, 'pinyin_vocab.txt')
 attn_pinyin_path = os.path.join(output_sighan_dir, 'attn_pinyin_model.weight')
 # sighan_test path
 test_sighan_path = os.path.join(output_sighan_dir, "sighan_output_test.txt")
-result_path = os.path.join(output_sighan_dir, "result_sighan.txt")
+result_pinyin_path = os.path.join(output_sighan_dir, "result_sighan.txt")
 
 # config
 batch_size = 64

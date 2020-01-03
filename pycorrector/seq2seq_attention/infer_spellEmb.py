@@ -16,14 +16,17 @@ from pycorrector.seq2seq_attention.seq2seq_attn_multiembedding import Seq2seqAtt
 
 
 class Inference(object):
-    def __init__(self, save_vocab_path='', attn_model_path='', maxlen=400):
+    def __init__(self, save_vocab_path='', save_pinyin_path='', attn_model_path='', maxlen=400):
         if os.path.exists(save_vocab_path):
             self.char2id = load_word_dict(save_vocab_path)
+            self.pinyins = load_word_dict(save_pinyin_path)
             self.id2char = {int(j): i for i, j in self.char2id.items()}
+            self.id2pinyin = {int(i): j for i, j in self.pinyins.items()}
             self.chars = set([i for i in self.char2id.keys()])
+            self.pinyin2id = set([i for i in self.pinyins.keys()])
         else:
             print('not exist vocab path')
-        seq2seq_attn_model = Seq2seqAttn_multiembedding(self.chars, attn_model_path=attn_model_path)
+        seq2seq_attn_model = Seq2seqAttn_multiembedding(self.chars, self.i , attn_model_path=attn_model_path)
         self.model = seq2seq_attn_model.build_model()
         self.maxlen = maxlen
 

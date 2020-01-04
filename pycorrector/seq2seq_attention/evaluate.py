@@ -11,7 +11,7 @@ from pycorrector.seq2seq_attention.corpus_reader import str2id, id2str
 from pycorrector.seq2seq_attention.reader import GO_TOKEN, EOS_TOKEN
 
 
-def gen_target(input_text, model, char2id, id2char, maxlen=400, topk=3, max_target_len=50):
+def gen_target(input_text, model, char2id, id2char, pinyin2id, id2pinyin, maxlen=400, topk=3, max_target_len=50):
     """beam search解码
     每次只保留topk个最优候选结果；如果topk=1，那么就是贪心搜索
     """
@@ -50,13 +50,15 @@ def gen_target(input_text, model, char2id, id2char, maxlen=400, topk=3, max_targ
 
 
 class Evaluate(Callback):
-    def __init__(self, model, attn_model_path, char2id, id2char, maxlen):
+    def __init__(self, model, attn_model_path, char2id, id2char, pinyin2id, id2pinyin, maxlen):
         super(Evaluate, self).__init__()
         self.lowest = 1e10
         self.model = model
         self.attn_model_path = attn_model_path
         self.char2id = char2id
         self.id2char = id2char
+        self.pinyin2id = pinyin2id
+        self.id2pinyin = id2pinyin
         self.maxlen = maxlen
 
     def on_epoch_end(self, epoch, logs=None):
@@ -64,7 +66,7 @@ class Evaluate(Callback):
                  '科学的发展会带来我们极好的生活。']
         # 训练过程中观察一两个例子，显示预测质量提高的过程
         for sent in sents:
-            target = gen_target(sent, self.model, self.char2id, self.id2char, self.maxlen)
+            target = gen_target(sent, self.model, self.char2id, self.id2char, self.pinyin2id, self.id2pinyin, self.maxlen)
             print('input:' + sent)
             print('output:' + target)
         # 保存最优结果

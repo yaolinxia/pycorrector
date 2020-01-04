@@ -21,17 +21,18 @@ class Inference(object):
             self.char2id = load_word_dict(save_vocab_path)
             self.pinyins = load_word_dict(save_pinyin_path)
             self.id2char = {int(j): i for i, j in self.char2id.items()}
-            self.id2pinyin = {int(i): j for i, j in self.pinyins.items()}
+            self.id2pinyin = {int(j): i for i, j in self.pinyins.items()}
             self.chars = set([i for i in self.char2id.keys()])
             self.pinyin2id = set([i for i in self.pinyins.keys()])
         else:
             print('not exist vocab path')
-        seq2seq_attn_model = Seq2seqAttn_multiembedding(self.chars, self.i , attn_model_path=attn_model_path)
+        seq2seq_attn_model = Seq2seqAttn_multiembedding(self.chars, self.pinyin2id , attn_model_path=attn_model_path)
         self.model = seq2seq_attn_model.build_model()
         self.maxlen = maxlen
 
     def infer(self, sentence):
-        return gen_target(sentence, self.model, self.char2id, self.id2char, self.maxlen, topk=3)
+        return gen_target(sentence, self.model, self.char2id, self.id2char, self.pinyin2id,
+                          self.id2pinyin, self.maxlen, topk=3)
 
 def input2list(test_path=config.test_sighan_path):
     test_list = []
@@ -56,7 +57,8 @@ def infer(test_list, p, out_path):
     test_len = len(test_list)
     test_rand = random.sample(test_list, test_len//p)
     inference = Inference(save_vocab_path=config.save_pinyin_path,
-                          attn_model_path=config.attn_pinyin_path,
+                          save_pinyin_path = config.save_pinyin_path,
+                          attn_model_path=config.attn_model_path,
                           maxlen=400)
     total_nums = 0
     correct_nums = 0
